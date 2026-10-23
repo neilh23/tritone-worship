@@ -1,0 +1,105 @@
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+
+<urn:tritoneworship:tritoneworship>
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 11 ; lv2:symbol "eq_31" ; lv2:name "EQ 31 Hz" ;
+        lv2:default -19.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 12 ; lv2:symbol "eq_44" ; lv2:name "EQ 44 Hz" ;
+        lv2:default -19.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 13 ; lv2:symbol "eq_63" ; lv2:name "EQ 63 Hz" ;
+        lv2:default -16.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 14 ; lv2:symbol "eq_88" ; lv2:name "EQ 88 Hz" ;
+        lv2:default -13.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 15 ; lv2:symbol "eq_125" ; lv2:name "EQ 125 Hz" ;
+        lv2:default -10.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 16 ; lv2:symbol "eq_175" ; lv2:name "EQ 175 Hz" ;
+        lv2:default -7.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 17 ; lv2:symbol "eq_250" ; lv2:name "EQ 250 Hz" ;
+        lv2:default -5.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 18 ; lv2:symbol "eq_350" ; lv2:name "EQ 350 Hz" ;
+        lv2:default -4.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 19 ; lv2:symbol "eq_500" ; lv2:name "EQ 500 Hz" ;
+        lv2:default -2.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 20 ; lv2:symbol "eq_700" ; lv2:name "EQ 700 Hz" ;
+        lv2:default 2.4 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 21 ; lv2:symbol "eq_1000" ; lv2:name "EQ 1000 Hz" ;
+        lv2:default 4.8 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 22 ; lv2:symbol "eq_1400" ; lv2:name "EQ 1400 Hz" ;
+        lv2:default 3.6 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 23 ; lv2:symbol "eq_2000" ; lv2:name "EQ 2000 Hz" ;
+        lv2:default 4.8 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 24 ; lv2:symbol "eq_2800" ; lv2:name "EQ 2800 Hz" ;
+        lv2:default 8.4 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 25 ; lv2:symbol "eq_4000" ; lv2:name "EQ 4000 Hz" ;
+        lv2:default 9.6 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 26 ; lv2:symbol "eq_5600" ; lv2:name "EQ 5600 Hz" ;
+        lv2:default 6.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 27 ; lv2:symbol "eq_8000" ; lv2:name "EQ 8000 Hz" ;
+        lv2:default 4.8 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 28 ; lv2:symbol "eq_11000" ; lv2:name "EQ 11000 Hz" ;
+        lv2:default 1.2 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 29 ; lv2:symbol "eq_14000" ; lv2:name "EQ 14000 Hz" ;
+        lv2:default -7.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 30 ; lv2:symbol "eq_18000" ; lv2:name "EQ 18000 Hz" ;
+        lv2:default -13.0 ; lv2:minimum -24.0 ; lv2:maximum 24.0 ;
+        units:unit units:db
+    ] .

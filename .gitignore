@@ -1,0 +1,4 @@
+build/
+# Fetched by tools/fetch_lmms_deps.sh for the native LMMS build
+third_party/lmms/
+third_party/qt5/

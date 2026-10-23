@@ -1,0 +1,41 @@
+<?xml version='1.0'?>
+<!DOCTYPE lmms-project>
+<lmms-project creatorversion="1.3.0-alpha.1.102+g89fc6c9" creator="LMMS" version="20" type="song">
+  <head masterpitch="0" timesig_numerator="4" timesig_denominator="4" mastervol="100" bpm="140"/>
+  <song>
+    <trackcontainer minimized="0" y="5" height="300" visible="1" x="5" maximized="0" width="600" type="song">
+      <track solo="0" name="Saw Guitar" muted="0" type="0">
+        <instrumenttrack pitchrange="1" basenote="69" usemasterpitch="1" fxch="0" pan="0" pitch="0" vol="60">
+          <instrument name="tripleoscillator">
+            <tripleoscillator finel1="8" stphdetun1="0" finel0="0" pan2="0" wavetype1="2" finer1="0" phoffset0="0" phoffset2="0" modalgo1="2" vol1="40" phoffset1="0" coarse2="-12" wavetype0="2" finer0="0" pan1="0" vol0="40" vol2="15" modalgo3="2" stphdetun0="0" modalgo2="2" pan0="0" coarse1="0" stphdetun2="0" userwavefile0="" finer2="0" userwavefile2="" coarse0="0" userwavefile1="" finel2="0" wavetype2="3"/>
+          </instrument>
+          <eldata fcut="14000" fres="0.5" fwet="0" ftype="0">
+            <elvol pdel="0" dec="0.5" lshp="0" lamt="0" latt="0" lspd_syncmode="0" rel="0.1" lspd_numerator="4" ctlenvamt="0" x100="0" att="0" hold="0.5" userwavefile="" lpdel="0" sustain="0.5" amt="0" lspd_denominator="4" lspd="0.1"/>
+            <elcut pdel="0" dec="0.5" lshp="0" lamt="0" latt="0" lspd_syncmode="0" rel="0.1" lspd_numerator="4" ctlenvamt="0" x100="0" att="0" hold="0.5" userwavefile="" lpdel="0" sustain="0.5" amt="0" lspd_denominator="4" lspd="0.1"/>
+            <elres pdel="0" dec="0.5" lshp="0" lamt="0" latt="0" lspd_syncmode="0" rel="0.1" lspd_numerator="4" ctlenvamt="0" x100="0" att="0" hold="0.5" userwavefile="" lpdel="0" sustain="0.5" amt="0" lspd_denominator="4" lspd="0.1"/>
+          </eldata>
+          <chordcreator chordrange="1" chord-enabled="0" chord="0"/>
+          <arpeggiator arptime="100" arpgate="100" arprange="1" arpskip="0" arpmode="0" arp-enabled="0" arptime_numerator="4" arp="0" arpmiss="0" arptime_denominator="4" arptime_syncmode="0" arpcycle="0" arpdir="0"/>
+          <midiport fixedinputvelocity="-1" outputprogram="1" writable="0" fixedoutputvelocity="-1" basevelocity="63" outputchannel="1" readable="0" inputchannel="0" fixedoutputnote="-1" outputcontroller="0" inputcontroller="0"/>
+          <fxchain enabled="1" numofeffects="1">
+            <effect syncmode="0" wet="1" autoquit_numerator="4" on="1" name="tritoneworship" autoquit="8000" gate="0" autoquit_denominator="4">
+              <tritoneworshipcontrols amount="50" death="0" blacken="0" trem_amount="0" trem_speed="800" bypass="0"/>
+              <key/>
+            </effect>
+          </fxchain>
+        </instrumenttrack>
+        <pattern pos="0" name="Riff" muted="0" steps="16" type="1">
+          <note pos="0" len="96" pan="0" key="52" vol="100"/>
+          <note pos="96" len="96" pan="0" key="53" vol="100"/>
+          <note pos="192" len="96" pan="0" key="55" vol="100"/>
+          <note pos="288" len="96" pan="0" key="53" vol="100"/>
+        </pattern>
+      </track>
+    </trackcontainer>
+    <fxmixer minimized="0" y="310" height="335" visible="1" x="5" maximized="0" width="543">
+      <fxchannel num="0" volume="1" name="Master" soloed="0" muted="0">
+        <fxchain enabled="0" numofeffects="0"/>
+      </fxchannel>
+    </fxmixer>
+  </song>
+</lmms-project>
