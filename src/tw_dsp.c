@@ -8,12 +8,16 @@
 #define EQ_Q 2.0f
 #define BLACKEN_DRIVE 4.0f
 #define BYPASS_FADE_S 0.01f
-#define DEATH_BASS_MAX_HZ 250.0f
-#define BLACKEN_TRIM_DB -0.6f /* +3 dB vs Blacken off, A-weighted on a saw riff */
+#define BASS_EQ_FLAT_MAX_HZ 250.0f
+#define BASS_MIN_DB -28.0f
+#define BASS_MAX_GAIN 1.2f
+#define COMP_STEPS 24 /* about how many minor thirds fit below the cutoff */
+#define COMP_SHARE 0.5f /* share of the stack's level rise, in dB, that Amount takes back */
+#define BLACKEN_TRIM_DB -1.5f /* +3 dB vs Blacken off, A-weighted on a saw riff */
 
 const TwParamInfo tw_param_info[TW_P_COUNT] = {
     [TW_P_AMOUNT] = {"amount", "Amount", 0, 100, 50},
-    [TW_P_DEATH] = {"death", "Death", 0, 100, 0},
+    [TW_P_BASS] = {"bass", "Bass", 0, 100, 0},
     [TW_P_BLACKEN] = {"blacken", "Blacken", 0, 1, 0},
     [TW_P_TREM_AMOUNT] = {"trem_amount", "Tremolo Amount", 0, 100, 0},
     [TW_P_TREM_SPEED] = {"trem_speed", "Tremolo Speed", 666, 1666, 800},
@@ -42,7 +46,7 @@ void tw_set_param(TwParams *p, int param, float value)
 {
     switch (param) {
     case TW_P_AMOUNT: p->amount = value; break;
-    case TW_P_DEATH: p->death = value; break;
+    case TW_P_BASS: p->bass = value; break;
     case TW_P_BLACKEN: p->blacken = value > 0.5f; break;
     case TW_P_TREM_AMOUNT: p->trem_amount = value; break;
     case TW_P_TREM_SPEED: p->trem_bpm = value; break;
@@ -62,12 +66,28 @@ float tw_amount_factor(float amount)
     return 0.3f * powf(1.0f / 0.3f, amount / 100.0f);
 }
 
-float tw_death_gain(float death)
+float tw_bass_gain(float bass)
 {
-    /* Linear in dB from -28 dB to 0 dB, fully off at 0 */
-    if (death <= 0.0f)
+    /* Linear in dB from -28 dB to +1.6 dB (x1.2), fully off at 0 */
+    if (bass <= 0.0f)
         return 0.0f;
-    return powf(10.0f, (death / 100.0f - 1.0f) * 1.4f);
+    float min = powf(10.0f, BASS_MIN_DB / 20.0f);
+    return min * powf(BASS_MAX_GAIN / min, bass / 100.0f);
+}
+
+/* Power of the note plus COMP_STEPS minor thirds, each f times the level of the last */
+static float stack_power(float f)
+{
+    float p = 0.0f, g = 1.0f;
+    for (int i = 0; i <= COMP_STEPS; i++, g *= f * f)
+        p += g;
+    return p;
+}
+
+float tw_amount_compensation(float amount)
+{
+    float rise = stack_power(tw_amount_factor(amount)) / stack_power(tw_amount_factor(0));
+    return powf(rise, -0.5f * COMP_SHARE);
 }
 
 static float rand01(TwState *s)
@@ -147,8 +167,8 @@ static int build_voices(const TwState *s, Voice *v)
         v[n++] = (Voice){i - 1, r, g};
     }
 
-    g = tw_death_gain(s->p.death);
-    for (int j = 0; j < TW_DEATH_STEPS && g >= 1e-4f; j++, g *= f)
+    g = tw_bass_gain(s->p.bass);
+    for (int j = 0; j < TW_BASS_STEPS && g >= 1e-4f; j++, g *= f)
         v[n++] = (Voice){TW_MAX_UP_STEPS + j, 0.5f * powf(2.0f, j / 4.0f), g};
     return n;
 }
@@ -277,12 +297,12 @@ static void set_peaking(TwBiquad *f, float sr, float freq, float db)
     f->a2 = (1.0f - alpha / a) / a0;
 }
 
-/* While Death is on, the bass bands are left flat so the octave below survives */
+/* While Bass is on, the bass bands are left flat so the octave below survives */
 static void update_eq(TwState *s)
 {
     float db[TW_EQ_BANDS];
     for (int b = 0; b < TW_EQ_BANDS; b++)
-        db[b] = s->p.death > 0.0f && tw_eq_freqs[b] <= DEATH_BASS_MAX_HZ ? 0.0f : s->p.eq_db[b];
+        db[b] = s->p.bass > 0.0f && tw_eq_freqs[b] <= BASS_EQ_FLAT_MAX_HZ ? 0.0f : s->p.eq_db[b];
     if (memcmp(db, s->eq_applied_db, sizeof db) == 0)
         return;
     memcpy(s->eq_applied_db, db, sizeof db);
@@ -360,9 +380,10 @@ void tw_process(TwState *s, const float *in_l, const float *in_r,
 {
     update_eq(s);
     const float fade = 1.0f / (BYPASS_FADE_S * s->sr);
+    const float comp = tw_amount_compensation(s->p.amount);
     for (uint32_t i = 0; i < n; i++) {
         float xl = in_l[i], xr = in_r[i];
-        float g = tw_trem_gain(s);
+        float g = tw_trem_gain(s) * comp;
         float yl = channel_tick(s, &s->ch[0], xl, g);
         float yr = channel_tick(s, &s->ch[1], xr, g);
         /* Keeps processing while bypassed so switching back in is seamless */

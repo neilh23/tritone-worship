@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     float value[TW_P_COUNT];
     for (int p = 0; p < TW_P_COUNT; p++)
         value[p] = tw_param_info[p].def;
-    value[TW_P_DEATH] = 40;
+    value[TW_P_BASS] = 40;
     value[TW_P_BLACKEN] = 1;
     value[TW_P_TREM_AMOUNT] = 60;
     value[TW_P_TREM_SPEED] = 1000;

@@ -13,7 +13,7 @@ typedef struct {
 
 static const Knob knobs[TW_P_COUNT] = {
     [TW_P_AMOUNT] = {80, 74, 30, "AMOUNT"},
-    [TW_P_DEATH] = {200, 74, 30, "DEATH"},
+    [TW_P_BASS] = {200, 74, 30, "BASS"},
     [TW_P_TREM_AMOUNT] = {80, 180, 24, "TREMOLO"},
     [TW_P_TREM_SPEED] = {200, 180, 24, "SPEED"},
 };

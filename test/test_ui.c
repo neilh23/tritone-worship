@@ -64,7 +64,7 @@ static void test_dragging_full_height_covers_whole_range(void)
 {
     CHECK(tw_ui_drag_value(TW_P_AMOUNT, 0, TW_UI_DRAG_PIXELS) == 100);
     CHECK(tw_ui_drag_value(TW_P_TREM_SPEED, 666, TW_UI_DRAG_PIXELS) == 1666);
-    CHECK(tw_ui_drag_value(TW_P_DEATH, 100, -TW_UI_DRAG_PIXELS / 2) == 50);
+    CHECK(tw_ui_drag_value(TW_P_BASS, 100, -TW_UI_DRAG_PIXELS / 2) == 50);
 }
 
 static void test_dragging_past_the_ends_clamps(void)
@@ -87,10 +87,10 @@ static void test_controls_are_inside_pedal_and_do_not_overlap(void)
 
 static void test_hit_finds_the_control_under_the_point(void)
 {
-    TwUiRect r = tw_ui_rect(TW_P_DEATH);
-    CHECK(tw_ui_hit(r.x, r.y) == TW_P_DEATH);
-    CHECK(tw_ui_hit(r.x + r.w - 1, r.y + r.h - 1) == TW_P_DEATH);
-    CHECK(tw_ui_hit(r.x + r.w, r.y) != TW_P_DEATH);
+    TwUiRect r = tw_ui_rect(TW_P_BASS);
+    CHECK(tw_ui_hit(r.x, r.y) == TW_P_BASS);
+    CHECK(tw_ui_hit(r.x + r.w - 1, r.y + r.h - 1) == TW_P_BASS);
+    CHECK(tw_ui_hit(r.x + r.w, r.y) != TW_P_BASS);
     r = tw_ui_rect(TW_P_BYPASS);
     CHECK(tw_ui_hit(r.x + r.w / 2, r.y + r.h / 2) == TW_P_BYPASS);
     CHECK(tw_ui_hit(0, 0) == -1);

@@ -420,7 +420,7 @@ static void test_state_round_trips_every_parameter(void)
 {
     Plugin a = create_plugin();
     set_plain(a, TW_P_AMOUNT, 77);
-    set_plain(a, TW_P_DEATH, 33);
+    set_plain(a, TW_P_BASS, 33);
     set_plain(a, TW_P_BLACKEN, 1);
     set_plain(a, TW_P_TREM_SPEED, 1234);
     Stream st = {{&stream_vtbl}};

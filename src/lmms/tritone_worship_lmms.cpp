@@ -275,7 +275,7 @@ extern "C" {
 Plugin::Descriptor PLUGIN_EXPORT tritoneworship_plugin_descriptor = {
     "tritoneworship",
     "TritoneWorship",
-    "Minor third stacking, death octave, black metal EQ and tremolo picking",
+    "Minor third stacking, bass octave, black metal EQ and tremolo picking",
     "Neil Howie",
     0x0100,
     Plugin::Effect,

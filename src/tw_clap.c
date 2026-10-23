@@ -62,7 +62,7 @@ static const clap_plugin_descriptor_t descriptor = {
     .manual_url = "",
     .support_url = "",
     .version = "0.1.0",
-    .description = "Minor third stacking, death octave, black metal EQ and tremolo picking",
+    .description = "Minor third stacking, bass octave, black metal EQ and tremolo picking",
     .features = features,
 };
 

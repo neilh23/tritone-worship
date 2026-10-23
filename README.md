@@ -4,17 +4,16 @@ A blackened audio effect based on stacked minor thirds.
 
 ![TritoneWorship pedal](docs/screenshot.png)
 
-TritoneWorship copies your sound up in minor thirds, each copy quieter than the last, up to about
-18 kHz. On top of that it can add a death octave below, a black metal EQ with distortion, and a
-tremolo that imitates tremolo picking. It is written in C and comes as CLAP, VST3, LV2 and a native
-LMMS effect.
+TritoneWorship stacks minor thirds, with optional bass octave, 'blackened' EQ and tremelo effects.
+
+It is written in C and compiles as CLAP, VST3, LV2 plugins, and a native LMMS effect.
 
 ## Controls
 
 | Control | Range | What it does |
 |---|---|---|
-| Amount | 0-100 | How much each minor third is cut. 0 cuts each step by 70%, 100 keeps every step at full level. |
-| Death | 0-100 | Adds the sound an octave below, with three minor thirds stacked on it. 0 is off, 1-100 runs from -28 dB to 0 dB. |
+| Amount | 0-100 | How much each minor third is cut. 0 cuts each step by 70%, 100 keeps every step at full level. Raising it also turns the overall level down a little, to offset part of the extra volume. |
+| Bass | 0-100 | Adds the sound an octave below, with three minor thirds stacked on it. 0 is off, 1-100 runs from -28 dB to +1.6 dB (20% louder than the note). |
 | Blacken | on/off | Soft-clip distortion and an EQ tuned to sound like a badly recorded black metal demo. The light above the switch shows when it is on. |
 | Tremolo | 0-100 | Tremolo picking depth. 0 is off, 1-100 is 30-100% depth. |
 | Speed | 666-1666 BPM | Tremolo picking speed. |
@@ -160,7 +159,7 @@ effect. Open it, play the keyboard and turn the knobs.
 
 | Path | Contents |
 |---|---|
-| `src/tw_dsp.c` | The effect: phase vocoder pitch stacking, death octave, Blacken, tremolo picking, bypass |
+| `src/tw_dsp.c` | The effect: phase vocoder pitch stacking, bass octave, Blacken, tremolo picking, bypass |
 | `src/tw_ui.c` | Draws the pedal into a pixel buffer, shared by every format |
 | `src/tw_gui_x11.c`, `tw_gui_win32.c`, `tw_gui_cocoa.m` | The pedal window on each platform |
 | `src/tw_clap.c`, `tw_vst3.c`, `tw_lv2.c`, `lmms/` | One wrapper per plugin format |

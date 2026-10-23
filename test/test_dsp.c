@@ -68,12 +68,30 @@ static void test_amount_curve(void)
     CHECK_NEAR(tw_amount_factor(100), 1.0, 1e-6);
 }
 
-static void test_death_curve(void)
+static void test_bass_curve(void)
 {
-    CHECK_NEAR(tw_death_gain(0), 0.0, 1e-9);
-    CHECK_NEAR(tw_death_gain(1), pow(10, -28 * 0.99 / 20), 1e-6);
-    CHECK_NEAR(tw_death_gain(50), pow(10, -14.0 / 20), 1e-6);
-    CHECK_NEAR(tw_death_gain(100), 1.0, 1e-6);
+    CHECK_NEAR(tw_bass_gain(0), 0.0, 1e-9);
+    CHECK_NEAR(20 * log10(tw_bass_gain(1)), -28 + 0.01 * (28 + 20 * log10(1.2)), 1e-4);
+    CHECK_NEAR(20 * log10(tw_bass_gain(50)), -28 + 0.5 * (28 + 20 * log10(1.2)), 1e-4);
+    CHECK_NEAR(tw_bass_gain(100), 1.2, 1e-6); /* 20% louder than the note */
+}
+
+/* Level of the note plus 24 minor thirds, each `factor` times the last, relative to the note alone */
+static double stack_rise_db(double factor)
+{
+    double power = 0;
+    for (int i = 0; i <= 24; i++)
+        power += pow(factor, 2 * i);
+    return 10 * log10(power);
+}
+
+static void test_amount_compensation_takes_back_half_the_stack_rise(void)
+{
+    double rise_100 = stack_rise_db(1.0) - stack_rise_db(0.3);
+    double rise_50 = stack_rise_db(sqrt(0.3)) - stack_rise_db(0.3);
+    CHECK_NEAR(tw_amount_compensation(0), 1.0, 1e-6);
+    CHECK_NEAR(20 * log10(tw_amount_compensation(50)), -0.5 * rise_50, 1e-3);    /* about -0.6 dB */
+    CHECK_NEAR(20 * log10(tw_amount_compensation(100)), -0.5 * rise_100, 1e-3);  /* about -6.8 dB */
 }
 
 static void test_amount_0_drops_each_minor_third_by_70_percent(void)
@@ -87,14 +105,16 @@ static void test_amount_0_drops_each_minor_third_by_70_percent(void)
     tw_destroy(s);
 }
 
-static void test_amount_100_keeps_every_minor_third_at_full_level(void)
+static void test_amount_100_keeps_every_minor_third_at_the_note_level(void)
 {
     TwState *s = tw_create(SR);
     s->p.amount = 100;
     const float *y = render_sine(s, 440);
-    CHECK_NEAR(level_at(y, minor_thirds_up(440, 1)), AMP, AMP * 0.2);
-    CHECK_NEAR(level_at(y, minor_thirds_up(440, 4)), AMP, AMP * 0.2);
-    CHECK_NEAR(level_at(y, minor_thirds_up(440, 9)), AMP, AMP * 0.2);
+    double note = AMP * tw_amount_compensation(100);
+    CHECK_NEAR(level_at(y, 440), note, note * 0.05);
+    CHECK_NEAR(level_at(y, minor_thirds_up(440, 1)), note, note * 0.2);
+    CHECK_NEAR(level_at(y, minor_thirds_up(440, 4)), note, note * 0.2);
+    CHECK_NEAR(level_at(y, minor_thirds_up(440, 9)), note, note * 0.2);
     tw_destroy(s);
 }
 
@@ -103,29 +123,31 @@ static void test_replication_stops_above_18khz(void)
     TwState *s = tw_create(SR);
     s->p.amount = 100;
     const float *y = render_sine(s, 10000);
-    CHECK_NEAR(level_at(y, minor_thirds_up(10000, 3)), AMP, AMP * 0.2); /* 16.8 kHz */
-    CHECK_NEAR(level_at(y, minor_thirds_up(10000, 4)), 0, AMP * 0.01); /* 20 kHz */
+    double note = AMP * tw_amount_compensation(100);
+    CHECK_NEAR(level_at(y, minor_thirds_up(10000, 3)), note, note * 0.2); /* 16.8 kHz */
+    CHECK_NEAR(level_at(y, minor_thirds_up(10000, 4)), 0, AMP * 0.01);   /* 20 kHz */
     tw_destroy(s);
 }
 
-static void test_death_0_adds_nothing_below(void)
+static void test_bass_0_adds_nothing_below(void)
 {
     TwState *s = tw_create(SR);
-    s->p.death = 0;
+    s->p.bass = 0;
     const float *y = render_sine(s, 440);
     CHECK_NEAR(level_at(y, 220), 0, AMP * 0.01);
     tw_destroy(s);
 }
 
-static void test_death_100_adds_octave_below_with_thirds_reduced_by_amount(void)
+static void test_bass_100_adds_octave_below_with_thirds_reduced_by_amount(void)
 {
     TwState *s = tw_create(SR);
     s->p.amount = 0;
-    s->p.death = 100;
+    s->p.bass = 100;
     const float *y = render_sine(s, 440);
-    CHECK_NEAR(level_at(y, 220), AMP, AMP * 0.2);
-    CHECK_NEAR(level_at(y, minor_thirds_up(220, 1)), AMP * 0.3, AMP * 0.3 * 0.2);
-    CHECK_NEAR(level_at(y, minor_thirds_up(220, 2)), AMP * 0.09, AMP * 0.09 * 0.2);
+    const double octave = AMP * 1.2;
+    CHECK_NEAR(level_at(y, 220), octave, octave * 0.2);
+    CHECK_NEAR(level_at(y, minor_thirds_up(220, 1)), octave * 0.3, octave * 0.3 * 0.2);
+    CHECK_NEAR(level_at(y, minor_thirds_up(220, 2)), octave * 0.09, octave * 0.09 * 0.2);
     tw_destroy(s);
 }
 
@@ -248,7 +270,7 @@ static void test_bypass_passes_input_through_unchanged(void)
 static void test_reset_clears_the_audio_tail(void)
 {
     TwState *s = tw_create(SR);
-    s->p.death = 100;
+    s->p.bass = 100;
     render_sine(s, 440);
     tw_reset(s);
     static float silence[BLOCK], l[BLOCK], r[BLOCK];
@@ -262,18 +284,19 @@ static void test_reset_clears_the_audio_tail(void)
     tw_destroy(s);
 }
 
-static double blacken_level_at_100hz_db(float death)
+static double blacken_level_at_100hz_db(float bass)
 {
     TwState *s = tw_create(SR);
     s->p.blacken = 1;
-    s->p.death = death;
+    s->p.bass = bass;
     const float *y = render_sine_at(s, 100, QUIET);
-    double db = 20 * log10(level_at(y, 100) / QUIET / s->blacken_trim);
+    /* EQ gain alone, without the fixed output gains */
+    double db = 20 * log10(level_at(y, 100) / QUIET / s->blacken_trim / tw_amount_compensation(s->p.amount));
     tw_destroy(s);
     return db;
 }
 
-static void test_blacken_cuts_bass_when_death_is_off(void)
+static void test_blacken_cuts_bass_when_bass_is_off(void)
 {
     double db = blacken_level_at_100hz_db(0);
     if (db > -9.0) {
@@ -282,16 +305,16 @@ static void test_blacken_cuts_bass_when_death_is_off(void)
     }
 }
 
-static void test_blacken_leaves_bass_untouched_when_death_is_on(void)
+static void test_blacken_leaves_bass_untouched_when_bass_is_on(void)
 {
     CHECK_NEAR(blacken_level_at_100hz_db(1), 0.0, 0.5);
     CHECK_NEAR(blacken_level_at_100hz_db(100), 0.0, 0.5);
 }
 
-static void test_blacken_trim_is_minus_0_6_db(void)
+static void test_blacken_trim_is_minus_1_5_db(void)
 {
     TwState *s = tw_create(SR);
-    CHECK_NEAR(20 * log10(s->blacken_trim), -0.6, 1e-4);
+    CHECK_NEAR(20 * log10(s->blacken_trim), -1.5, 1e-4);
     tw_destroy(s);
 }
 
@@ -312,12 +335,13 @@ static void test_blacken_on_applies_eq_band_gain_and_trim(void)
 int main(void)
 {
     test_amount_curve();
-    test_death_curve();
+    test_bass_curve();
+    test_amount_compensation_takes_back_half_the_stack_rise();
     test_amount_0_drops_each_minor_third_by_70_percent();
-    test_amount_100_keeps_every_minor_third_at_full_level();
+    test_amount_100_keeps_every_minor_third_at_the_note_level();
     test_replication_stops_above_18khz();
-    test_death_0_adds_nothing_below();
-    test_death_100_adds_octave_below_with_thirds_reduced_by_amount();
+    test_bass_0_adds_nothing_below();
+    test_bass_100_adds_octave_below_with_thirds_reduced_by_amount();
     test_tremolo_amount_0_is_unity_gain();
     test_tremolo_picks_at_bpm_limits();
     test_tremolo_lowest_setting_starts_at_30_percent_depth();
@@ -327,9 +351,9 @@ int main(void)
     test_blacken_distortion_adds_odd_harmonics();
     test_bypass_passes_input_through_unchanged();
     test_reset_clears_the_audio_tail();
-    test_blacken_cuts_bass_when_death_is_off();
-    test_blacken_leaves_bass_untouched_when_death_is_on();
-    test_blacken_trim_is_minus_0_6_db();
+    test_blacken_cuts_bass_when_bass_is_off();
+    test_blacken_leaves_bass_untouched_when_bass_is_on();
+    test_blacken_trim_is_minus_1_5_db();
     test_blacken_on_applies_eq_band_gain_and_trim();
     printf(failures ? "%d check(s) failed\n" : "all tests passed\n", failures);
     return failures != 0;

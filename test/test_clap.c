@@ -265,7 +265,7 @@ static void test_state_round_trips_every_parameter(void)
 {
     const clap_plugin_t *a = create_plugin();
     set_param(a, TW_P_AMOUNT, 77);
-    set_param(a, TW_P_DEATH, 33);
+    set_param(a, TW_P_BASS, 33);
     set_param(a, TW_P_BLACKEN, 1);
     set_param(a, TW_P_TREM_SPEED, 1234);
     Stream st = {0};

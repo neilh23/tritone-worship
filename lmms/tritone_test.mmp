@@ -19,7 +19,7 @@
           <midiport fixedinputvelocity="-1" outputprogram="1" writable="0" fixedoutputvelocity="-1" basevelocity="63" outputchannel="1" readable="0" inputchannel="0" fixedoutputnote="-1" outputcontroller="0" inputcontroller="0"/>
           <fxchain enabled="1" numofeffects="1">
             <effect syncmode="0" wet="1" autoquit_numerator="4" on="1" name="tritoneworship" autoquit="8000" gate="0" autoquit_denominator="4">
-              <tritoneworshipcontrols amount="50" death="0" blacken="0" trem_amount="0" trem_speed="800" bypass="0"/>
+              <tritoneworshipcontrols amount="50" bass="0" blacken="0" trem_amount="0" trem_speed="800" bypass="0"/>
               <key/>
             </effect>
           </fxchain>

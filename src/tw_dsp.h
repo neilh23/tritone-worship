@@ -9,11 +9,11 @@
 #define TW_LATENCY (TW_FFT_SIZE - TW_HOP)
 #define TW_BINS (TW_FFT_SIZE / 2 + 1)
 #define TW_MAX_UP_STEPS 40
-#define TW_DEATH_STEPS 4
-#define TW_MAX_VOICES (TW_MAX_UP_STEPS + TW_DEATH_STEPS)
+#define TW_BASS_STEPS 4
+#define TW_MAX_VOICES (TW_MAX_UP_STEPS + TW_BASS_STEPS)
 #define TW_CUTOFF_HZ 18000.0f
 
-enum { TW_P_AMOUNT, TW_P_DEATH, TW_P_BLACKEN, TW_P_TREM_AMOUNT, TW_P_TREM_SPEED, TW_P_BYPASS, TW_P_COUNT };
+enum { TW_P_AMOUNT, TW_P_BASS, TW_P_BLACKEN, TW_P_TREM_AMOUNT, TW_P_TREM_SPEED, TW_P_BYPASS, TW_P_COUNT };
 
 typedef struct {
     const char *symbol, *name;
@@ -26,7 +26,7 @@ extern const float tw_blacken_default_db[TW_EQ_BANDS];
 
 typedef struct {
     float amount;      /* 0-100 */
-    float death;       /* 0-100 */
+    float bass;        /* 0-100 */
     int blacken;       /* 0/1 */
     float trem_amount; /* 0-100 */
     float trem_bpm;    /* 666-1666 */
@@ -79,7 +79,9 @@ typedef struct {
 void tw_set_param(TwParams *p, int param, float value);
 float tw_amount_factor(float amount);
 float tw_blacken_distort(float x);
-float tw_death_gain(float death);
+float tw_bass_gain(float bass);
+/* Output gain that takes back part of the level the stack adds as Amount rises; 1 at Amount 0 */
+float tw_amount_compensation(float amount);
 float tw_trem_gain(TwState *s);
 
 TwState *tw_create(float sample_rate);
