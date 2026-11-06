@@ -11,7 +11,7 @@
 #include "EffectControlDialog.h"
 #include "EffectControls.h"
 #include "Engine.h"
-#include "Mixer.h"
+#include "AudioEngine.h"
 #include "plugin_export.h"
 #ifdef TW_EQ_TUNING
 #include "Knob.h"
@@ -28,6 +28,9 @@ extern "C" {
 #define EQ_STRIP_H 0
 #endif
 
+namespace lmms
+{
+
 extern "C" Plugin::Descriptor PLUGIN_EXPORT tritoneworship_plugin_descriptor;
 
 static bool is_switch(int param)
@@ -36,7 +39,7 @@ static bool is_switch(int param)
 }
 
 class TwEffect;
-class TwDialog;
+namespace gui { class TwDialog; }
 
 class TwControls : public EffectControls
 {
@@ -65,7 +68,7 @@ public:
 
     QString nodeName() const override { return "tritoneworshipcontrols"; }
     int controlCount() override { return TW_P_COUNT; }
-    EffectControlDialog *createView() override;
+    gui::EffectControlDialog *createView() override;
 
     AutomatableModel *m_models[TW_P_COUNT];
 #ifdef TW_EQ_TUNING
@@ -86,12 +89,9 @@ public:
 
     EffectControls *controls() override { return &m_controls; }
 
-    bool processAudioBuffer(sampleFrame *buf, const fpp_t frames) override
+    ProcessStatus processImpl(SampleFrame *buf, const f_cnt_t frames) override
     {
-        if (!isEnabled() || !isRunning())
-            return false;
-
-        float sr = Engine::mixer()->processingSampleRate();
+        float sr = Engine::audioEngine()->outputSampleRate();
         if (!m_dsp || sr != m_sr) {
             tw_destroy(m_dsp);
             m_dsp = tw_create(sr);
@@ -106,21 +106,18 @@ public:
 
         m_l.resize(frames);
         m_r.resize(frames);
-        for (fpp_t f = 0; f < frames; f++) {
+        for (f_cnt_t f = 0; f < frames; f++) {
             m_l[f] = buf[f][0];
             m_r[f] = buf[f][1];
         }
         tw_process(m_dsp, m_l.data(), m_r.data(), m_l.data(), m_r.data(), frames);
 
         const float d = dryLevel(), w = wetLevel();
-        double outSum = 0.0;
-        for (fpp_t f = 0; f < frames; f++) {
+        for (f_cnt_t f = 0; f < frames; f++) {
             buf[f][0] = d * buf[f][0] + w * m_l[f];
             buf[f][1] = d * buf[f][1] + w * m_r[f];
-            outSum += buf[f][0] * buf[f][0] + buf[f][1] * buf[f][1];
         }
-        checkGate(outSum / frames);
-        return isRunning();
+        return ProcessStatus::ContinueIfNotQuiet;
     }
 
 private:
@@ -146,6 +143,9 @@ TwControls::TwControls(TwEffect *effect) :
                                  QString("EQ %1 Hz").arg(tw_eq_freqs[b]));
 #endif
 }
+
+namespace gui
+{
 
 class TwDialog : public EffectControlDialog
 {
@@ -256,7 +256,7 @@ TwDialog::TwDialog(TwControls *controls) :
 #ifdef TW_EQ_TUNING
     for (int b = 0; b < TW_EQ_BANDS; b++) {
         float f = tw_eq_freqs[b];
-        Knob *k = new Knob(knobSmall_17, this);
+        Knob *k = new Knob(KnobType::Small17, this);
         k->move(6 + (b % 10) * 27, TW_UI_H + 6 + (b / 10) * 46);
         k->setModel(controls->m_eq[b]);
         k->setLabel(f >= 1000 ? QString("%1k").arg(f / 1000) : QString::number(f));
@@ -265,9 +265,11 @@ TwDialog::TwDialog(TwControls *controls) :
 #endif
 }
 
-EffectControlDialog *TwControls::createView()
+} // namespace gui
+
+gui::EffectControlDialog *TwControls::createView()
 {
-    return new TwDialog(this);
+    return new gui::TwDialog(this);
 }
 
 extern "C" {
@@ -278,7 +280,7 @@ Plugin::Descriptor PLUGIN_EXPORT tritoneworship_plugin_descriptor = {
     "Minor third stacking, bass octave, black metal EQ and tremolo picking",
     "Neil Howie",
     0x0100,
-    Plugin::Effect,
+    Plugin::Type::Effect,
     nullptr,
     nullptr,
     nullptr,
@@ -290,3 +292,5 @@ PLUGIN_EXPORT Plugin *lmms_plugin_main(Model *parent, void *data)
 }
 
 }
+
+} // namespace lmms

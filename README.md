@@ -48,7 +48,7 @@ Unzip, then copy what your host uses:
 Then rescan plugins in your host. The binaries need glibc 2.35 or newer (Ubuntu 22.04, Debian 12
 or later) and X11 or XWayland for the pedal window.
 
-The native LMMS plugin is built against the LMMS 1.3.0-alpha nightly (git 89fc6c9). Native
+The native LMMS plugin is built against LMMS 1.3.0-alpha.2. Native
 plugins depend on LMMS internals, so other LMMS versions may need it rebuilt against their own
 headers. The LV2 version works in any LMMS with LV2 support, without the pedal
 window.

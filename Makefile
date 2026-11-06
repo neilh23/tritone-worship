@@ -88,7 +88,7 @@ endif
 LMMS_PLUGIN = $(BUILD)/libtritoneworship.so
 LMMS_PLUGIN_DIR ?= $(HOME)/lmms/plugins
 QT = third_party/qt5/include
-LMMS_CXXFLAGS = -fPIC -std=c++14 -fvisibility=hidden -DQT_NO_VERSION_TAGGING \
+LMMS_CXXFLAGS = -fPIC -std=c++20 -fvisibility=hidden -DQT_NO_VERSION_TAGGING \
 	-Isrc -Isrc/lmms -Ithird_party/lmms/include \
 	-I$(QT) -I$(QT)/QtCore -I$(QT)/QtGui -I$(QT)/QtWidgets -I$(QT)/QtXml
 

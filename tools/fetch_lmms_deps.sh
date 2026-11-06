@@ -1,10 +1,10 @@
 #!/bin/sh
 # Fetches headers for the native LMMS plugin into third_party/.
 # The LMMS headers must match the LMMS build the plugin is loaded into:
-# 1.3.0-alpha.1.102+g89fc6c9 (the nightly AppImage).
+# 1.3.0-alpha.2 (the release AppImage).
 set -e
 cd "$(dirname "$0")/.."
-LMMS_COMMIT=89fc6c960b548018a4848346f617d5b4f79b82fa
+LMMS_COMMIT=4e677cb6c6ab7ac8bec221097053753c1eb273e3
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
